@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>全屋智能报价 · 侯哥智改</title>
+<meta name="description" content="全屋智能报价：四档基础套餐（开关/窗帘/网关/传感器）+ 灯具/网络/中控单独加购">
+<meta name="theme-color" content="#1f3a5f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="智能报价">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<style>
+  :root{
+    --navy:#1f3a5f;--navy2:#2c5282;--orange:#f5a623;--orange-d:#e08e0b;
+    --ink:#1f2933;--gray:#66727f;--line:#e3e8ee;--bg:#eef2f7;--card:#fff;
+    --green:#2f9e6e;--c1:#5b8def;--c2:#2f9e6e;--c3:#f5a623;--c4:#c0392b;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+    line-height:1.6;font-size:15px;}
+  .app{max-width:520px;margin:0 auto;min-height:100vh;background:var(--bg);}
+  .top{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;
+    padding:18px 18px 16px;}
+  .top h1{margin:0;font-size:18px;}
+  .top .s{opacity:.82;font-size:12px;margin-top:3px;}
+  .body{padding:14px 14px 90px;}
+  .card{background:var(--card);border-radius:14px;padding:14px 15px;margin-bottom:12px;
+    box-shadow:0 2px 10px rgba(0,0,0,.05);}
+  .card h2{margin:0 0 10px;font-size:15px;color:var(--navy);}
+  .field{margin:10px 0;}
+  .field label{display:block;font-size:13px;color:var(--gray);margin-bottom:6px;}
+  .field input[type=number]{width:100%;padding:11px 12px;border:1px solid var(--line);
+    border-radius:10px;font-size:16px;background:#fafbfc;}
+  .stepper{display:flex;align-items:center;gap:12px;}
+  .stepper button{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);
+    background:#fff;font-size:20px;color:var(--navy);font-weight:700;}
+  .stepper .val{min-width:34px;text-align:center;font-size:18px;font-weight:700;}
+  /* 数量可直接手输（手机上比连点 ± 快得多） */
+  .stepper .inp{
+    width:64px;height:38px;text-align:center;font-size:18px;font-weight:700;
+    border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--navy);
+    font-family:inherit;padding:0 4px;-moz-appearance:textfield;
+  }
+  .stepper .inp::-webkit-outer-spin-button,.stepper .inp::-webkit-inner-spin-button{
+    -webkit-appearance:none;margin:0;}
+  .stepper .inp:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 3px rgba(242,133,31,.15);}
+  /* 已手动锁定的项：挂个角标（仅对仍会随面积/户型自动估算的项有效） */
+  .field{position:relative;}
+  .field.manual label::after{
+    content:"已手动";margin-left:6px;font-size:10px;color:var(--orange);
+    background:rgba(242,133,31,.12);padding:1px 6px;border-radius:8px;font-weight:600;
+  }
+  .field.manual .inp{border-color:var(--orange);background:#fffaf4;}
+  .miniBtn{
+    padding:7px 13px;border-radius:9px;border:1px solid var(--line);background:#fff;
+    font-size:12.5px;color:var(--navy);font-family:inherit;cursor:pointer;
+  }
+  .miniBtn:active{background:#f2f5f9;}
+  .toggle{display:flex;align-items:center;justify-content:space-between;}
+  .sw{width:50px;height:28px;border-radius:20px;background:#cfd8e3;position:relative;transition:.2s;flex:none;cursor:pointer;}
+  .sw.on{background:var(--orange);}
+  .sw::after{content:"";position:absolute;width:22px;height:22px;border-radius:50%;background:#fff;
+    top:3px;left:3px;transition:.2s;}
+  .sw.on::after{left:25px;}
+  /* 四档对比 */
+  .tiers{display:flex;gap:8px;}
+  .tier{flex:1;background:#fff;border:1.5px solid var(--line);border-radius:12px;
+    padding:10px 6px 11px;text-align:center;position:relative;}
+  .tier.hot{border-color:var(--orange);box-shadow:0 0 0 2px rgba(245,166,35,.18);}
+  .tier .nm{font-size:13px;font-weight:800;letter-spacing:.5px;}
+  .tier .big{font-size:19px;font-weight:800;margin:3px 0 1px;color:var(--navy);}
+  .tier .sub{font-size:10px;color:var(--gray);line-height:1.35;}
+  .tier .tag{position:absolute;top:-9px;left:50%;transform:translateX(-50%);
+    background:var(--orange);color:#1f2933;font-size:10px;font-weight:800;
+    padding:1px 7px;border-radius:8px;white-space:nowrap;}
+  .tier.e .nm{color:var(--c1);} .tier.s .nm{color:var(--c2);}
+  .tier.c .nm{color:var(--c3);} .tier.l .nm{color:var(--c4);}
+  table{width:100%;border-collapse:collapse;font-size:12px;margin-top:4px;}
+  th,td{border-bottom:1px solid var(--line);padding:7px 4px;text-align:right;vertical-align:top;}
+  th{color:var(--navy);font-weight:600;font-size:11px;}
+  td.nm,th.nm{text-align:left;}
+  td.rule,th.rule{text-align:left;color:var(--gray);font-size:11px;}
+  .col-e{color:var(--c1);} .col-s{color:var(--c2);} .col-c{color:var(--orange-d);} .col-l{color:var(--c4);}
+  .note{font-size:11px;color:var(--gray);margin-top:8px;line-height:1.5;}
+  .desc{font-size:11px;color:var(--gray);margin-top:6px;line-height:1.45;
+    background:#f7f9fc;border-radius:8px;padding:8px 10px;}
+  .desc b{color:var(--navy);}
+  /* 加购块——灯具/网络/中控单独成块，勾选才计入合计 */
+  .addon{border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:10px;background:#fff;transition:.15s;}
+  .addon.on{border-color:var(--orange);background:#fffaf3;box-shadow:0 0 0 2px rgba(245,166,35,.12);}
+  .addon .hd{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .addon .hd .t{font-size:14px;font-weight:800;color:var(--navy);}
+  .addon .hd .t .s2{font-size:11px;color:var(--gray);font-weight:400;margin-left:6px;}
+  .addon .qty{display:flex;gap:12px;flex-wrap:wrap;margin-top:6px;}
+  .addon .qty .field{margin:0;flex:1;min-width:130px;}
+  .addon .auto{font-size:11px;color:var(--gray);margin-top:8px;line-height:1.55;
+    background:#f7f9fc;border-radius:8px;padding:7px 10px;}
+  .addon .auto b{color:var(--navy);}
+  .addon .sum{font-size:12px;color:var(--navy);font-weight:700;margin-top:8px;}
+  .addon:not(.on) .qty,.addon:not(.on) .auto,.addon:not(.on) .sum{opacity:.45;}
+  /* 报价合计条 */
+  .grand{background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:12px;
+    padding:12px 12px 10px;margin-top:14px;color:#fff;}
+  .grand .gt{font-size:13px;font-weight:800;margin-bottom:8px;}
+  .grand .gs{display:flex;gap:8px;}
+  .grand .g{flex:1;text-align:center;background:rgba(255,255,255,.13);border-radius:10px;padding:7px 2px 8px;}
+  .grand .g .n{font-size:11px;opacity:.85;}
+  .grand .g .v{font-size:14.5px;font-weight:800;margin-top:2px;white-space:nowrap;}
+  /* 明细表分区标题 */
+  .sect{font-size:12px;font-weight:800;color:var(--navy);margin:14px 0 4px;
+    padding-left:8px;border-left:3px solid var(--orange);}
+  .sect:first-of-type{margin-top:6px;}
+  .sel{font-size:10px;color:#fff;background:var(--orange);padding:1px 6px;border-radius:8px;
+    margin-left:4px;font-weight:600;}
+  .foot{position:fixed;bottom:0;left:0;right:0;max-width:520px;margin:0 auto;
+    background:#fff;padding:10px 14px;border-top:1px solid var(--line);box-shadow:0 -2px 10px rgba(0,0,0,.06);}
+  .foot button{width:100%;background:var(--orange);color:#1f2933;border:none;border-radius:12px;
+    padding:14px;font-size:16px;font-weight:800;}
+  /* 手机安装提示条 */
+  .installTip{display:flex;align-items:flex-start;gap:8px;background:#fff8ec;border:1px solid #f0d9ae;
+    border-radius:12px;padding:9px 11px;margin:0 0 12px;font-size:12px;color:#8a6a2b;line-height:1.55;}
+  .installTip b{color:#b4741a;}
+  .installTip .x{margin-left:auto;flex:none;width:22px;height:22px;border-radius:50%;background:#f0d9ae;
+    color:#8a6a2b;text-align:center;line-height:22px;font-size:14px;cursor:pointer;font-weight:700;}
+  /* 轻提示 */
+  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:86px;background:rgba(31,58,95,.95);
+    color:#fff;font-size:12.5px;padding:9px 15px;border-radius:20px;z-index:99;opacity:0;
+    transition:.25s;pointer-events:none;max-width:86%;text-align:center;line-height:1.5;}
+  .toast.show{opacity:1;pointer-events:auto;cursor:pointer;}
+  @media print{.foot{display:none;}.app{max-width:100%;}.top{background:#1f3a5f!important;}
+    .tier{border:1.5px solid #999!important;}.tier.hot{box-shadow:none;}
+    .addon:not(.on) .qty,.addon:not(.on) .auto,.addon:not(.on) .sum{opacity:1!important;}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <h1>全屋智能报价小程序 · 套餐+加购版</h1>
+    <div class="s">设计师快速给客户出价 · 填面积+户型秒出四档基础套餐，灯具/网络/中控单独加购</div>
+  </div>
+
+  <div class="body">
+    <div class="installTip" id="installTip"><span><b>装到手机桌面：</b>浏览器菜单 →「添加到主屏幕」，之后点桌面图标直接打开，跟小程序一样。没网也能报价。</span><span class="x" onclick="hideTip()">×</span></div>
+    <div class="card">
+      <h2>① 户型信息</h2>
+      <div class="field">
+        <label>套内面积（㎡）</label>
+        <input type="number" id="area" value="100" min="20" max="400" step="5">
+      </div>
+      <div class="field">
+        <label>卧室数量（室）</label>
+        <div class="stepper"><button onclick="step('B',-1)">−</button>
+          <input class="val inp" id="B" type="number" inputmode="numeric" min="0" value="3" oninput="setN('B',this.value)">
+          <button onclick="step('B',1)">+</button></div>
+      </div>
+      <div class="field">
+        <label>客厅 / 餐厅数量（厅）</label>
+        <div class="stepper"><button onclick="step('L',-1)">−</button>
+          <input class="val inp" id="L" type="number" inputmode="numeric" min="0" value="1" oninput="setN('L',this.value)">
+          <button onclick="step('L',1)">+</button></div>
+      </div>
+      <div class="field">
+        <label>卫生间数量</label>
+        <div class="stepper"><button onclick="step('W',-1)">−</button>
+          <input class="val inp" id="W" type="number" inputmode="numeric" min="0" value="2" oninput="setN('W',this.value)">
+          <button onclick="step('W',1)">+</button></div>
+      </div>
+      <div class="field toggle">
+        <label style="margin:0">是否有独立书房</label>
+        <div class="sw" id="study" onclick="tog('study')"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>② 四档基础套餐 <span style="font-size:11px;color:var(--gray);font-weight:400">仅含开关/窗帘/网关/传感器 · 含服务费</span></h2>
+      <div class="tiers">
+        <div class="tier e"><div class="nm">入门</div><div class="big" id="tE">—</div><div class="sub" id="tEs">—</div></div>
+        <div class="tier s hot"><div class="tag">主推</div><div class="nm">标准</div><div class="big" id="tS">—</div><div class="sub" id="tSs">—</div></div>
+        <div class="tier c"><div class="nm">舒适</div><div class="big" id="tC">—</div><div class="sub" id="tCs">—</div></div>
+        <div class="tier l"><div class="nm">豪华</div><div class="big" id="tL">—</div><div class="sub" id="tLs">—</div></div>
+      </div>
+      <div class="desc">
+        <b>入门</b>：卡农Z1单键开关+基础窗帘(A1)+多模网关2+基础传感器，刚需/出租够用。<br>
+        <b>标准</b>：卡农Z1双键开关+窗帘(C200)+中枢网关，主流家庭首选。<br>
+        <b>舒适</b>：卡农Z1三键开关+窗帘(C3)+M200网关，静音与稳定性提升。<br>
+        <b>豪华</b>：卡农Z1四键+双电机梦幻帘(C4)+方舟M3网关，旗舰底子。<br>
+        <span style="color:var(--orange-d)">灯具 / 网络 / 中控屏不混在套餐内，见④单独勾选加购。</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>③ 套餐数量选配</h2>
+      <div class="note" style="margin:0 0 6px">套餐内数量默认按户型/面积自动估算。点 <b>±</b> 或<b>直接输入数字</b>即可改成自选值（会标「已手动」，之后改面积/户型也不再被覆盖）；减到 0 即不选该项。</div>
+      <div class="row" style="margin:0 0 12px;gap:8px;display:flex">
+        <button class="miniBtn" onclick="unlockAll()">↺ 恢复自动估算</button>
+        <button class="miniBtn" onclick="wipeAll()">✕ 清空重来</button>
+      </div>
+      <div class="field"><label>智能开关面板（面）</label>
+        <div class="stepper"><button onclick="step('swN',-1)">−</button><input class="val inp" id="swN" type="number" inputmode="numeric" min="0" value="12" oninput="setN('swN',this.value)"><button onclick="step('swN',1)">+</button></div></div>
+      <div class="field"><label>窗帘电机（台）</label>
+        <div class="stepper"><button onclick="step('cuN',-1)">−</button><input class="val inp" id="cuN" type="number" inputmode="numeric" min="0" value="5" oninput="setN('cuN',this.value)"><button onclick="step('cuN',1)">+</button></div></div>
+      <div class="field"><label>智能网关（台）</label>
+        <div class="stepper"><button onclick="step('gwN',-1)">−</button><input class="val inp" id="gwN" type="number" inputmode="numeric" min="0" value="1" oninput="setN('gwN',this.value)"><button onclick="step('gwN',1)">+</button></div></div>
+      <div class="field"><label>人体传感器（个）</label>
+        <div class="stepper"><button onclick="step('huN',-1)">−</button><input class="val inp" id="huN" type="number" inputmode="numeric" min="0" value="3" oninput="setN('huN',this.value)"><button onclick="step('huN',1)">+</button></div></div>
+      <div class="field"><label>门窗传感器（个）</label>
+        <div class="stepper"><button onclick="step('drN',-1)">−</button><input class="val inp" id="drN" type="number" inputmode="numeric" min="0" value="2" oninput="setN('drN',this.value)"><button onclick="step('drN',1)">+</button></div></div>
+      <div class="field"><label>燃气报警（个）</label>
+        <div class="stepper"><button onclick="step('gasN',-1)">−</button><input class="val inp" id="gasN" type="number" inputmode="numeric" min="0" value="1" oninput="setN('gasN',this.value)"><button onclick="step('gasN',1)">+</button></div></div>
+      <div class="field"><label>水浸报警（个）</label>
+        <div class="stepper"><button onclick="step('wtN',-1)">−</button><input class="val inp" id="wtN" type="number" inputmode="numeric" min="0" value="1" oninput="setN('wtN',this.value)"><button onclick="step('wtN',1)">+</button></div></div>
+    </div>
+
+    <div class="card">
+      <h2>④ 加购三款（单独选·不混套餐）</h2>
+      <div class="note" style="margin:0">灯具、网络、中控屏为独立加购款，<b>勾选后才计入下方「报价合计」</b>；数量随你填，价格按供应商报价单执行。</div>
+
+      <div class="addon" id="adLt">
+        <div class="hd">
+          <div class="t">灯具<span class="s2">筒射灯 + 灯带（按米）</span></div>
+          <div class="sw" onclick="togAdd('lt')"></div>
+        </div>
+        <div class="qty">
+          <div class="field"><label>Aqara射灯T2Pro-36°（盏）</label>
+            <div class="stepper"><button onclick="step('ltN',-1)">−</button><input class="val inp" id="ltN" type="number" inputmode="numeric" min="0" value="10" oninput="setN('ltN',this.value)"><button onclick="step('ltN',1)">+</button></div></div>
+          <div class="field"><label>双色温灯带T2（米）</label>
+            <div class="stepper"><button onclick="step('tapeM',-1)">−</button><input class="val inp" id="tapeM" type="number" inputmode="numeric" min="0" value="10" oninput="setN('tapeM',this.value)"><button onclick="step('tapeM',1)">+</button></div></div>
+        </div>
+        <div class="auto" id="ltAuto">—</div>
+        <div class="sum" id="sumLt">—</div>
+      </div>
+
+      <div class="addon" id="adNet">
+        <div class="hd">
+          <div class="t">网络<span class="s2">主路由 + 面板AP + 吸顶AP</span></div>
+          <div class="sw" onclick="togAdd('net')"></div>
+        </div>
+        <div class="qty">
+          <div class="field"><label>面板AP RG-EAP162（个）</label>
+            <div class="stepper"><button onclick="step('apN',-1)">−</button><input class="val inp" id="apN" type="number" inputmode="numeric" min="0" value="4" oninput="setN('apN',this.value)"><button onclick="step('apN',1)">+</button></div></div>
+          <div class="field"><label>吸顶AP RG-EAP262（个）</label>
+            <div class="stepper"><button onclick="step('apcN',-1)">−</button><input class="val inp" id="apcN" type="number" inputmode="numeric" min="0" value="0" oninput="setN('apcN',this.value)"><button onclick="step('apcN',1)">+</button></div></div>
+          <div class="field toggle">
+            <label style="margin:0">含主路由 RG-EG110G-P V2</label>
+            <div class="sw on" id="rtOn" onclick="tog('rtOn')"></div>
+          </div>
+        </div>
+        <div class="sum" id="sumNet">—</div>
+      </div>
+
+      <div class="addon" id="adPv">
+        <div class="hd">
+          <div class="t">中控屏<span class="s2">妙控S100 / 集悦智慧面板</span></div>
+          <div class="sw" onclick="togAdd('pv')"></div>
+        </div>
+        <div class="qty">
+          <div class="field"><label>妙控场景屏S100（块）</label>
+            <div class="stepper"><button onclick="step('pnS',-1)">−</button><input class="val inp" id="pnS" type="number" inputmode="numeric" min="0" value="1" oninput="setN('pnS',this.value)"><button onclick="step('pnS',1)">+</button></div></div>
+          <div class="field"><label>集悦智慧面板（块）</label>
+            <div class="stepper"><button onclick="step('pnJ',-1)">−</button><input class="val inp" id="pnJ" type="number" inputmode="numeric" min="0" value="0" oninput="setN('pnJ',this.value)"><button onclick="step('pnJ',1)">+</button></div></div>
+        </div>
+        <div class="sum" id="sumPv">—</div>
+      </div>
+
+      <div class="grand">
+        <div class="gt">报价合计（套餐 + 已勾选加购 + 服务费）</div>
+        <div class="gs">
+          <div class="g"><div class="n">入门</div><div class="v" id="gE">—</div></div>
+          <div class="g"><div class="n">标准</div><div class="v" id="gS">—</div></div>
+          <div class="g"><div class="n">舒适</div><div class="v" id="gC">—</div></div>
+          <div class="g"><div class="n">豪华</div><div class="v" id="gL">—</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>⑤ 设备点位明细（四档单价对照）</h2>
+      <div class="sect">套餐内（基础套餐）</div>
+      <table id="detailPkg"></table>
+      <div class="sect">加购项（单独列出·勾选才计入合计）</div>
+      <table id="detailAdd"></table>
+      <div class="note">
+        单价依据供应商报价单：<b>开关面板全系按卡农Z1计价</b>（单面均价 179/199/219/249 折档，实际请以门店进货价替换）；窗帘 A1/C200/C3/C4、网关 多模2/中枢/M200/方舟M3、传感器取原表梯队。
+        灯具：射灯T2Pro ¥309/盏、灯带T2 ¥65/米、驱动模块 ¥299/个（不论几米都配1个）、调光模块(PWM) ¥116/个（每10米1个、不足10米按10米）、电源统一按200W ¥156/个（每20米1个）。
+        网络：主路由 RG-EG110G-P V2 ¥1135、面板AP RG-EAP162 ¥579/个、吸顶AP RG-EAP262 ¥699/个。中控：妙控场景屏S100 ¥649/块、集悦智慧面板 ¥1099/块。最终以现场勘测与选型为准。
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>⑥ 服务费</h2>
+      <div class="field">
+        <label>服务费比例（% · 含安装调试）</label>
+        <input type="number" id="feeRate" value="30" min="0" max="100" step="5">
+      </div>
+      <div class="field">
+        <label>额外服务费（元 · 设计/勘测/远程，可填0）</label>
+        <input type="number" id="feeExtra" value="0" min="0" step="100">
+      </div>
+      <div class="desc" id="feeDesc">服务费 = 设备费 × 30% + 额外 ¥0</div>
+    </div>
+
+    <div class="note" style="padding:0 4px;">
+      提示：本工具为单文件 H5，可「添加到主屏幕」当小程序用，零认证零备案。套餐只含开关/窗帘/网关/传感器，灯具/网络/中控单独加购——给客户报的时候先报套餐价，再按需一样样加，不硬塞。
+    </div>
+  </div>
+
+  <div class="foot"><button onclick="window.print()">🖨 生成报价单 / 存 PDF</button></div>
+</div>
+
+<script>
+  var S={B:3,L:1,W:2,study:false,swN:12,cuN:5,gwN:1,huN:3,drN:2,gasN:1,wtN:1,ltN:10,tapeM:10,apN:4,apcN:0,rtOn:true,pnS:1,pnJ:0};
+  // 会随面积/户型自动估算的项（键名与输入 id 一致）；用户手动改过即锁定，不再被覆盖
+  var auto={swN:true,cuN:true,gwN:true,ltN:true,tapeM:true,apN:true};
+  // 加购勾选状态（灯具/网络/中控屏），默认全不勾——套餐外单独卖
+  var on={lt:false,net:false,pv:false};
+
+  /* 手动锁定的标记：仅对 auto 里的项有意义（脱离自动估算） */
+  function markManual(k){
+    if(!(k in auto)) return;
+    var el=document.getElementById(k);
+    if(!el) return;
+    var f=el.closest('.field');
+    if(f) f.classList.add('manual'); // 角标由 CSS .field.manual label::after 渲染
+  }
+  function unlockAll(){
+    for(var k in auto) auto[k]=true;
+    document.querySelectorAll('.field.manual').forEach(function(f){ f.classList.remove('manual'); });
+    seedAll();          // 重新按户型打底
+    calc();
+  }
+  // 按户型给一批打底值（首次加载 / 恢复自动时用）
+  function seedAll(){
+    var st=S.study?1:0, area=num('area');
+    S.swN=S.B*2+S.L*2+S.W+st+2;
+    S.cuN=S.L+2+Math.max(0,S.B-1);
+    S.ltN=Math.max(6,Math.round(area/10));
+    S.tapeM=Math.max(6,Math.round(area/10));
+    if(auto.gwN) S.gwN=area>150?2:1;
+    if(auto.apN) S.apN=S.B+st+S.L;
+  }
+  // 单价（元）：套餐内分四档；加购项按供应商报价单统一价
+  var T={
+    sw:{e:179, s:199, c:219, l:249},   // 智能开关面板/面：卡农Z1 单键/双键/三键/四键
+    cu:{e:899, s:1099, c:1549, l:2199},// 窗帘电机/台：A1 / C200 / C3 / C4双电机
+    gw:{e:229, s:349, c:499, l:1099},  // 网关/台：多模网关2 / 中枢 / M200 / 方舟M3
+    hu:{e:98,  s:98,  c:98,  l:98},    // 人体/个
+    dr:{e:76,  s:76,  c:76,  l:76},    // 门窗/个
+    gas:{e:249,s:249, c:249, l:249},   // 燃气/个
+    wt:{e:109, s:109, c:109, l:109},   // 水浸/个
+    spot:309,  // Aqara射灯T2Pro-36°（盏）
+    tape:65,   // Aqara双色温灯带T2（元/米）
+    drv:299,   // 智能灯带驱动模块（个）——不论几米都配1个
+    pwm:116,   // 双色温灯带调光模块PWM（个）——每10米1个，不足10米按10米
+    pwr:156,   // 200W电源（个）——统一按200W价，每20米灯带1个
+    rt:1135,   // 主路由 RG-EG110G-P V2
+    ap:579,    // 面板式AP RG-EAP162(G)V2
+    apc:699,   // 吸顶式AP RG-EAP262(G)V2
+    pnS:649,   // 妙控场景屏S100
+    pnJ:1099   // Aqara集悦智慧面板
+  };
+  var TIERS=['e','s','c','l'], TN={e:'入门',s:'标准',c:'舒适',l:'豪华'};
+
+  function step(k,d){
+    S[k]=Math.max(0,(S[k]||0)+d);
+    var el=document.getElementById(k);
+    if(el && 'value' in el) el.value=S[k]; else if(el) el.textContent=S[k];
+    if(k in auto){ auto[k]=false; markManual(k); } // 手动改过即锁定，不再被自动估算覆盖
+    calc();
+  }
+  /* 直接手输数量（手机上输入框比连点 ± 快） */
+  function setN(k,v){
+    var n=parseInt(v,10); if(isNaN(n)||n<0) n=0;
+    S[k]=n;
+    if(k in auto){ auto[k]=false; markManual(k); }
+    calc();
+  }
+
+  function tog(k){S[k]=!S[k];document.getElementById(k).classList.toggle('on',S[k]);calc();}
+  // 加购块勾选/取消
+  function togAdd(k){
+    on[k]=!on[k];
+    var idMap={lt:'adLt',net:'adNet',pv:'adPv'};
+    document.getElementById(idMap[k]).classList.toggle('on',on[k]);
+    calc();
+  }
+  function num(id){return parseFloat(document.getElementById(id).value)||0;}
+  function money(n){return '¥'+Math.round(n).toLocaleString();}
+
+  function calc(){
+    var B=S.B,L=S.L,W=S.W,st=S.study?1:0,area=num('area');
+    // 仅 auto 里的项随面积/户型估算；手动改过即锁定（含开关/电机/灯带米数）
+    if(auto.swN) S.swN=B*2+L*2+W+st+2;
+    if(auto.cuN) S.cuN=L+2+Math.max(0,B-1);
+    if(auto.ltN) S.ltN=Math.max(6,Math.round(area/10));
+    if(auto.tapeM) S.tapeM=Math.max(6,Math.round(area/10));
+    if(auto.gwN) S.gwN=area>150?2:1;
+    if(auto.apN) S.apN=B+st+L;
+    // 灯带派生配件：驱动模块不论几米都配1个；调光每10米1个（不足按10米）；电源每20米1个
+    var dvN=S.tapeM>0?1:0;
+    var pwmN=S.tapeM>0?Math.ceil(S.tapeM/10):0;
+    var pwrN=S.tapeM>0?Math.ceil(S.tapeM/20):0;
+    // 数量显示回填。用户正在输入时不能抢焦点/覆盖光标。
+    ['swN','cuN','gwN','ltN','tapeM','apN','apcN','pnS','pnJ','huN','drN','gasN','wtN'].forEach(function(id){
+      var el=document.getElementById(id);
+      if(!el || id===document.activeElement) return;
+      var val=String(S[id]);
+      if(el.value!==val) el.value=val;
+    });
+    // 灯具块：随米数自动带出的配件说明
+    document.getElementById('ltAuto').innerHTML = S.tapeM>0
+      ? ('随灯带自动配：<b>驱动模块 ×'+dvN+'</b>（¥299/个）· <b>调光模块 ×'+pwmN+'</b>（每10米1个·¥116/个）· <b>200W电源 ×'+pwrN+'</b>（每20米1个·¥156/个）')
+      : '未填灯带米数——驱动/调光/电源不配；只要筒射灯也行。';
+    var feeRate = (num('feeRate')||0)/100;
+    var feeExtra = num('feeExtra')||0;
+
+    // ===== 套餐内行（基础套餐：开关/窗帘/网关/传感器）=====
+    var pkgRows=[
+      ['智能开关面板', S.swN+'面（卧室2/厅2/卫1/书房1/厨玄关2）', function(t){return S.swN*T.sw[t];}],
+      ['窗帘电机', S.cuN+'台（客厅单轨'+L+'·主卧双轨2·余卧室单轨）', function(t){return S.cuN*T.cu[t];}],
+      ['智能网关', S.gwN+'台', function(t){return S.gwN*T.gw[t];}],
+      ['人体/门窗传感器', S.huN+'人体+'+S.drN+'门窗', function(t){return S.huN*T.hu[t]+S.drN*T.dr[t];}],
+      ['燃气/水浸报警', S.gasN+'燃气+'+S.wtN+'水浸', function(t){return S.gasN*T.gas[t]+S.wtN*T.wt[t];}]
+    ];
+    // ===== 加购行（灯具/网络/中控屏，单独列出；组名 lt/net/pv 对应勾选状态）=====
+    var addRows=[
+      ['lt','Aqara射灯T2Pro-36°', S.ltN+'盏', function(){return S.ltN*T.spot;}],
+      ['lt','双色温灯带T2', S.tapeM+'米', function(){return S.tapeM*T.tape;}],
+      ['lt','智能灯带驱动模块', dvN+'个（不论几米配1个）', function(){return dvN*T.drv;}],
+      ['lt','调光模块(PWM)', pwmN+'个（每10米1个）', function(){return pwmN*T.pwm;}],
+      ['lt','200W电源', pwrN+'个（每20米1个）', function(){return pwrN*T.pwr;}],
+      ['net','主路由 RG-EG110G-P V2', S.rtOn?'1台':'未选', function(){return S.rtOn?T.rt:0;}],
+      ['net','面板AP RG-EAP162', S.apN+'个', function(){return S.apN*T.ap;}],
+      ['net','吸顶AP RG-EAP262', S.apcN+'个', function(){return S.apcN*T.apc;}],
+      ['pv','妙控场景屏S100', S.pnS+'块', function(){return S.pnS*T.pnS;}],
+      ['pv','集悦智慧面板', S.pnJ+'块', function(){return S.pnJ*T.pnJ;}]
+    ];
+
+    // 套餐设备费、加购设备费（仅勾选组）、总价
+    var dev={e:0,s:0,c:0,l:0}, devAdd={e:0,s:0,c:0,l:0}, totPkg={}, totAll={};
+    pkgRows.forEach(function(r){
+      TIERS.forEach(function(t){ dev[t]+=r[2](t); });
+    });
+    addRows.forEach(function(r){
+      if(!on[r[0]]) return;
+      TIERS.forEach(function(t){ devAdd[t]+=r[3](t); });
+    });
+    TIERS.forEach(function(t){
+      totPkg[t]=dev[t]*(1+feeRate)+feeExtra;                    // 套餐价（含服务费）
+      totAll[t]=(dev[t]+devAdd[t])*(1+feeRate)+feeExtra;        // 报价合计（含已选加购+服务费）
+    });
+
+    // 顶部四档套餐卡片
+    var ids={e:['tE','tEs'],s:['tS','tSs'],c:['tC','tCs'],l:['tL','tLs']};
+    TIERS.forEach(function(t){
+      document.getElementById(ids[t][0]).textContent=money(totPkg[t]);
+      document.getElementById(ids[t][1]).textContent='设备'+money(dev[t])+'\n服务'+money(dev[t]*feeRate+feeExtra);
+      document.getElementById(ids[t][1]).style.whiteSpace='pre-line';
+    });
+
+    // 各加购块参考价（组小计）
+    var groups={lt:[0,1,2,3,4],net:[5,6,7],pv:[8,9]};
+    var sumIds={lt:'sumLt',net:'sumNet',pv:'sumPv'};
+    for(var g in groups){
+      var sum=0;
+      groups[g].forEach(function(i){ sum+=addRows[i][3]('e'); });
+      document.getElementById(sumIds[g]).textContent='加购参考价：'+money(sum);
+    }
+
+    // 报价合计条
+    var gIds={e:'gE',s:'gS',c:'gC',l:'gL'};
+    TIERS.forEach(function(t){
+      document.getElementById(gIds[t]).textContent=money(totAll[t]);
+    });
+
+    // 明细表：套餐内
+    fillTable('detailPkg', pkgRows, ['套餐合计（含服务费）', totPkg]);
+    // 明细表：加购项（勾选组带「已选」角标）
+    fillTable('detailAdd', addRows.map(function(r){
+      return [r[1]+(on[r[0]]?' <span class="sel">已选</span>':''), r[2], r[3]];
+    }), [['已选加购小计（设备费）', devAdd], ['报价合计（含服务费）', totAll]]);
+
+    document.getElementById('feeDesc').textContent='服务费 = 设备费 × '+(feeRate*100).toFixed(0)+'% + 额外 ¥'+Math.round(feeExtra);
+    save();
+  }
+
+  // rows: [名称, 规则, fn]；totals: [名称, {e,s,c,l}] 或此类数组的数组
+  function fillTable(tblId, rows, totals){
+    if(typeof totals[0]==='string') totals=[totals]; // 兼容单行合计
+    var t=document.getElementById(tblId);
+    t.innerHTML='<tr><th class="nm">设备</th><th class="rule">点位/规则</th>'+
+      '<th class="col-e">入门</th><th class="col-s">标准</th><th class="col-c">舒适</th><th class="col-l">豪华</th></tr>';
+    rows.forEach(function(r){
+      var tr=document.createElement('tr');
+      tr.innerHTML='<td class="nm">'+r[0]+'</td><td class="rule">'+r[1]+'</td>'+
+        '<td class="col-e">'+money(r[2]('e'))+'</td><td class="col-s">'+money(r[2]('s'))+'</td>'+
+        '<td class="col-c">'+money(r[2]('c'))+'</td><td class="col-l">'+money(r[2]('l'))+'</td>';
+      t.appendChild(tr);
+    });
+    totals.forEach(function(tt){
+      var tr=document.createElement('tr');
+      tr.style.fontWeight='700';
+      tr.innerHTML='<td class="nm">'+tt[0]+'</td><td class="rule">—</td>'+
+        '<td class="col-e">'+money(tt[1].e)+'</td><td class="col-s">'+money(tt[1].s)+'</td>'+
+        '<td class="col-c">'+money(tt[1].c)+'</td><td class="col-l">'+money(tt[1].l)+'</td>';
+      t.appendChild(tr);
+    });
+  }
+  /* ===== 参数本地留存 =====
+     手机上关掉再打开不用重填面积户型；读不到（比如无痕模式）就照常按户型打底。 */
+  var LS_KEY='houge_quote_state_v1', _saveT=null;
+  function saveNow(){
+    try{ localStorage.setItem(LS_KEY, JSON.stringify({
+      S:S, auto:auto, on:on,
+      area:document.getElementById('area').value,
+      feeRate:document.getElementById('feeRate').value,
+      feeExtra:document.getElementById('feeExtra').value
+    })); }catch(e){}
+  }
+  function save(){
+    clearTimeout(_saveT);
+    _saveT=setTimeout(saveNow,250);   // 防抖：连点 ± 时不反复写
+  }
+  // 切后台/关页面时立刻落盘，避免丢最后一次改动
+  window.addEventListener('pagehide',saveNow);
+  window.addEventListener('beforeunload',saveNow);
+  document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='hidden') saveNow(); });
+  var _restored=false;
+  try{
+    var _raw=localStorage.getItem(LS_KEY);
+    if(_raw){
+      var _d=JSON.parse(_raw);
+      if(_d.S)  for(var _k in _d.S)  if(_k in S) S[_k]=_d.S[_k];
+      if(_d.auto) for(var _k in _d.auto) if(_k in auto) auto[_k]=!!_d.auto[_k];
+      if(_d.on)  for(var _k in _d.on)  if(_k in on) on[_k]=!!_d.on[_k];
+      ['area','feeRate','feeExtra'].forEach(function(_id){ if(_d[_id]!==undefined&&_d[_id]!==null) document.getElementById(_id).value=_d[_id]; });
+      _restored=true;
+    }
+  }catch(e){}
+
+  if(!_restored) seedAll();   // 第一次用：按户型打底
+
+  // 恢复几个开关的视觉状态
+  (function(){
+    if(S.study) document.getElementById('study').classList.add('on');
+    if(S.rtOn) document.getElementById('rtOn').classList.add('on');
+    var idMap={lt:'adLt',net:'adNet',pv:'adPv'};
+    for(var g in on){ if(on[g]) document.getElementById(idMap[g]).classList.add('on'); }
+  })();
+
+  // 清空重来：给下一个客户从零开始
+  function wipeAll(){
+    try{ localStorage.removeItem(LS_KEY); }catch(e){}
+    location.reload();
+  }
+
+  calc();
+  document.getElementById('feeRate').addEventListener('input', calc);
+  document.getElementById('feeExtra').addEventListener('input', calc);
+  document.getElementById('area').addEventListener('input', calc);
+</script>
+<script>
+  /* ===== PWA：装到桌面 + 离线可用 =====
+     iOS 用 apple-mobile-web-app-capable，安卓/鸿蒙用 manifest，都已写在 head。 */
+  (function(){
+    // 1) 安装提示条：已经是桌面启动、或手动关过，就不再打扰
+    var tip=document.getElementById('installTip');
+    var standalone=(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||window.navigator.standalone;
+    var off=false; try{ off=localStorage.getItem('houge_quote_tip_off')==='1'; }catch(e){}
+    if(standalone||off){ if(tip) tip.style.display='none'; }
+    window.hideTip=function(){ if(tip) tip.style.display='none'; try{ localStorage.setItem('houge_quote_tip_off','1'); }catch(e){} };
+
+    // 2) 轻提示
+    var tEl=document.createElement('div');
+    tEl.className='toast'; document.body.appendChild(tEl); var tT=null;
+    window.showToast=function(msg,ms){
+      tEl.textContent=msg; tEl.classList.add('show');
+      clearTimeout(tT); tT=setTimeout(function(){ tEl.classList.remove('show'); }, ms||2600);
+    };
+    tEl.addEventListener('click',function(){ location.reload(); });
+
+    // 3) 注册 Service Worker（离线打开；新版本不强制刷，提示一下）
+    if('serviceWorker' in navigator){
+      window.addEventListener('load',function(){
+        navigator.serviceWorker.register('sw.js').then(function(reg){
+          reg.addEventListener('updatefound',function(){
+            var nw=reg.installing;
+            if(!nw) return;
+            nw.addEventListener('statechange',function(){
+              if(nw.state==='installed' && navigator.serviceWorker.controller){
+                showToast('有新版本，点这里刷新',6000);
+              }
+            });
+          });
+        }).catch(function(){});
+      });
+    }
+  })();
+</script>
+</body>
+</html>
