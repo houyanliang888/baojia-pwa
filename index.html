@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>全屋智能报价 · 侯哥智改</title>
-<meta name="description" content="全屋智能报价：四档基础套餐（开关/窗帘/网关/传感器）+ 灯具/网络/中控单独加购">
+<meta name="description" content="全屋智能报价：三档基础套餐（开关/窗帘/网关/传感器）+ 灯具/网络/中控单独加购">
 <meta name="theme-color" content="#1f3a5f">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -68,7 +68,7 @@
   .sw::after{content:"";position:absolute;width:22px;height:22px;border-radius:50%;background:#fff;
     top:3px;left:3px;transition:.2s;}
   .sw.on::after{left:25px;}
-  /* 四档对比 */
+  /* 三档对比 */
   .tiers{display:flex;gap:8px;}
   .tier{flex:1;background:#fff;border:1.5px solid var(--line);border-radius:12px;
     padding:10px 6px 11px;text-align:center;position:relative;}
@@ -142,7 +142,7 @@
 <div class="app">
   <div class="top">
     <h1>全屋智能报价小程序 · 套餐+加购版</h1>
-    <div class="s">设计师快速给客户出价 · 填面积+户型秒出四档基础套餐，灯具/网络/中控单独加购</div>
+    <div class="s">设计师快速给客户出价 · 填面积+户型秒出三档基础套餐，灯具/网络/中控单独加购</div>
   </div>
 
   <div class="body">
@@ -178,15 +178,13 @@
     </div>
 
     <div class="card">
-      <h2>② 四档基础套餐 <span style="font-size:11px;color:var(--gray);font-weight:400">仅含开关/窗帘/网关/传感器 · 含服务费</span></h2>
+      <h2>② 三档基础套餐 <span style="font-size:11px;color:var(--gray);font-weight:400">仅含开关/窗帘/网关/传感器 · 含服务费</span></h2>
       <div class="tiers">
-        <div class="tier e"><div class="nm">入门</div><div class="big" id="tE">—</div><div class="sub" id="tEs">—</div></div>
         <div class="tier s hot"><div class="tag">主推</div><div class="nm">标准</div><div class="big" id="tS">—</div><div class="sub" id="tSs">—</div></div>
         <div class="tier c"><div class="nm">舒适</div><div class="big" id="tC">—</div><div class="sub" id="tCs">—</div></div>
         <div class="tier l"><div class="nm">豪华</div><div class="big" id="tL">—</div><div class="sub" id="tLs">—</div></div>
       </div>
       <div class="desc">
-        <b>入门</b>：卡农Z1单键开关+窗帘(C200)+M200网关+基础传感器，刚需/出租也够用。<br>
         <b>标准</b>：卡农Z1双键开关+窗帘(C200)+M200网关，主流家庭首选。<br>
         <b>舒适</b>：卡农Z1三键开关+窗帘(C3)+M200网关，静音与稳定性提升。<br>
         <b>豪华</b>：卡农Z1四键+双电机梦幻帘(C4)+方舟M3网关，旗舰底子。<br>
@@ -271,7 +269,6 @@
       <div class="grand">
         <div class="gt">报价合计（套餐 + 已勾选加购 + 服务费）</div>
         <div class="gs">
-          <div class="g"><div class="n">入门</div><div class="v" id="gE">—</div></div>
           <div class="g"><div class="n">标准</div><div class="v" id="gS">—</div></div>
           <div class="g"><div class="n">舒适</div><div class="v" id="gC">—</div></div>
           <div class="g"><div class="n">豪华</div><div class="v" id="gL">—</div></div>
@@ -280,13 +277,13 @@
     </div>
 
     <div class="card">
-      <h2>⑤ 设备点位明细（四档单价对照）</h2>
+      <h2>⑤ 设备点位明细（三档单价对照）</h2>
       <div class="sect">套餐内（基础套餐）</div>
       <table id="detailPkg"></table>
       <div class="sect">加购项（单独列出·勾选才计入合计）</div>
       <table id="detailAdd"></table>
       <div class="note">
-        单价依据供应商报价单：<b>开关面板全系按卡农Z1计价</b>（单面均价 179/199/219/249 折档，实际请以门店进货价替换）；窗帘 C200/C200/C3/C4、网关 M200/M200/M200/方舟M3、传感器取原表梯队。
+        单价依据供应商报价单：<b>开关面板全系按卡农Z1计价</b>（单面均价 199/219/249 折标准/舒适/豪华三档，实际请以门店进货价替换）；窗帘 C200/C3/C4、网关 M200/M200/方舟M3、传感器取原表梯队。
         灯具：射灯T2Pro ¥309/盏、灯带T2 ¥65/米、驱动模块 ¥299/个（不论几米都配1个）、调光模块(PWM) ¥116/个（每10米1个、不足10米按10米）、电源统一按200W ¥156/个（每20米1个）。
         网络：主路由 RG-EG110G-P V2 ¥1135、面板AP RG-EAP162 ¥579/个、吸顶AP RG-EAP262 ¥699/个。中控：妙控场景屏S100 ¥649/块、集悦智慧面板 ¥1099/块。最终以现场勘测与选型为准。
       </div>
@@ -344,15 +341,15 @@
     if(auto.gwN) S.gwN=area>150?2:1;
     if(auto.apN) S.apN=S.B+st+S.L;
   }
-  // 单价（元）：套餐内分四档；加购项按供应商报价单统一价
+  // 单价（元）：套餐内分三档；加购项按供应商报价单统一价
   var T={
-    sw:{e:179, s:199, c:219, l:249},   // 智能开关面板/面：卡农Z1 单键/双键/三键/四键
-    cu:{e:1099,s:1099, c:1549, l:2199},// 窗帘电机/台：C200 / C200 / C3 / C4双电机（入门已升级到C200）
-    gw:{e:499, s:499, c:499, l:1099},  // 网关/台：M200 / M200 / M200 / 方舟M3（入门与标准统一M200）
-    hu:{e:98,  s:98,  c:98,  l:98},    // 人体/个
-    dr:{e:76,  s:76,  c:76,  l:76},    // 门窗/个
-    gas:{e:249,s:249, c:249, l:249},   // 燃气/个
-    wt:{e:109, s:109, c:109, l:109},   // 水浸/个
+    sw:{s:199, c:219, l:249},   // 智能开关面板/面：卡农Z1 双键/三键/四键
+    cu:{s:1099, c:1549, l:2199},// 窗帘电机/台：C200 / C3 / C4双电机
+    gw:{s:499, c:499, l:1099},  // 网关/台：M200 / M200 / 方舟M3
+    hu:{s:98,  c:98,  l:98},    // 人体/个
+    dr:{s:76,  c:76,  l:76},    // 门窗/个
+    gas:{s:249, c:249, l:249},   // 燃气/个
+    wt:{s:109, c:109, l:109},   // 水浸/个
     spot:309,  // Aqara射灯T2Pro-36°（盏）
     tape:65,   // Aqara双色温灯带T2（元/米）
     drv:299,   // 智能灯带驱动模块（个）——不论几米都配1个
@@ -364,7 +361,7 @@
     pnS:649,   // 妙控场景屏S100
     pnJ:1099   // Aqara集悦智慧面板
   };
-  var TIERS=['e','s','c','l'], TN={e:'入门',s:'标准',c:'舒适',l:'豪华'};
+  var TIERS=['s','c','l'], TN={s:'标准',c:'舒适',l:'豪华'};
 
   function step(k,d){
     S[k]=Math.max(0,(S[k]||0)+d);
@@ -442,7 +439,7 @@
     ];
 
     // 套餐设备费、加购设备费（仅勾选组）、总价
-    var dev={e:0,s:0,c:0,l:0}, devAdd={e:0,s:0,c:0,l:0}, totPkg={}, totAll={};
+    var dev={s:0,c:0,l:0}, devAdd={s:0,c:0,l:0}, totPkg={}, totAll={};
     pkgRows.forEach(function(r){
       TIERS.forEach(function(t){ dev[t]+=r[2](t); });
     });
@@ -455,8 +452,8 @@
       totAll[t]=(dev[t]+devAdd[t])*(1+feeRate)+feeExtra;        // 报价合计（含已选加购+服务费）
     });
 
-    // 顶部四档套餐卡片
-    var ids={e:['tE','tEs'],s:['tS','tSs'],c:['tC','tCs'],l:['tL','tLs']};
+    // 顶部三档套餐卡片
+    var ids={s:['tS','tSs'],c:['tC','tCs'],l:['tL','tLs']};
     TIERS.forEach(function(t){
       document.getElementById(ids[t][0]).textContent=money(totPkg[t]);
       document.getElementById(ids[t][1]).textContent='设备'+money(dev[t])+'\n服务'+money(dev[t]*feeRate+feeExtra);
@@ -468,12 +465,12 @@
     var sumIds={lt:'sumLt',net:'sumNet',pv:'sumPv'};
     for(var g in groups){
       var sum=0;
-      groups[g].forEach(function(i){ sum+=addRows[i][3]('e'); });
+      groups[g].forEach(function(i){ sum+=addRows[i][3](TIERS[0]); });
       document.getElementById(sumIds[g]).textContent='加购参考价：'+money(sum);
     }
 
     // 报价合计条
-    var gIds={e:'gE',s:'gS',c:'gC',l:'gL'};
+    var gIds={s:'gS',c:'gC',l:'gL'};
     TIERS.forEach(function(t){
       document.getElementById(gIds[t]).textContent=money(totAll[t]);
     });
@@ -489,25 +486,23 @@
     save();
   }
 
-  // rows: [名称, 规则, fn]；totals: [名称, {e,s,c,l}] 或此类数组的数组
+  // rows: [名称, 规则, fn]；totals: [名称, {s,c,l}] 或此类数组的数组
   function fillTable(tblId, rows, totals){
     if(typeof totals[0]==='string') totals=[totals]; // 兼容单行合计
     var t=document.getElementById(tblId);
-    t.innerHTML='<tr><th class="nm">设备</th><th class="rule">点位/规则</th>'+
-      '<th class="col-e">入门</th><th class="col-s">标准</th><th class="col-c">舒适</th><th class="col-l">豪华</th></tr>';
+    var colHead=TIERS.map(function(x){return '<th class="col-'+x+'">'+TN[x]+'</th>';}).join('');
+    t.innerHTML='<tr><th class="nm">设备</th><th class="rule">点位/规则</th>'+colHead+'</tr>';
     rows.forEach(function(r){
       var tr=document.createElement('tr');
-      tr.innerHTML='<td class="nm">'+r[0]+'</td><td class="rule">'+r[1]+'</td>'+
-        '<td class="col-e">'+money(r[2]('e'))+'</td><td class="col-s">'+money(r[2]('s'))+'</td>'+
-        '<td class="col-c">'+money(r[2]('c'))+'</td><td class="col-l">'+money(r[2]('l'))+'</td>';
+      var cells=TIERS.map(function(x){return '<td class="col-'+x+'">'+money(r[2](x))+'</td>';}).join('');
+      tr.innerHTML='<td class="nm">'+r[0]+'</td><td class="rule">'+r[1]+'</td>'+cells;
       t.appendChild(tr);
     });
     totals.forEach(function(tt){
       var tr=document.createElement('tr');
       tr.style.fontWeight='700';
-      tr.innerHTML='<td class="nm">'+tt[0]+'</td><td class="rule">—</td>'+
-        '<td class="col-e">'+money(tt[1].e)+'</td><td class="col-s">'+money(tt[1].s)+'</td>'+
-        '<td class="col-c">'+money(tt[1].c)+'</td><td class="col-l">'+money(tt[1].l)+'</td>';
+      var cells=TIERS.map(function(x){return '<td class="col-'+x+'">'+money(tt[1][x])+'</td>';}).join('');
+      tr.innerHTML='<td class="nm">'+tt[0]+'</td><td class="rule">—</td>'+cells;
       t.appendChild(tr);
     });
   }
