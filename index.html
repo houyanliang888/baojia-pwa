@@ -93,8 +93,10 @@
     background:#f7f9fc;border-radius:8px;padding:8px 10px;}
   .desc b{color:var(--navy);}
   /* 加购块——灯具/网络/中控单独成块，勾选才计入合计 */
-  .addon{border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:10px;background:#fff;transition:.15s;}
+  .addon{border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:10px;background:#fff;transition:.15s;cursor:pointer;}
   .addon.on{border-color:var(--orange);background:#fffaf3;box-shadow:0 0 0 2px rgba(245,166,35,.12);}
+  .addon.on .sw{background:var(--orange);}
+  .addon.on .sw::after{left:25px;}
   .addon .hd{display:flex;align-items:center;justify-content:space-between;gap:10px;}
   .addon .hd .t{font-size:14px;font-weight:800;color:var(--navy);}
   .addon .hd .t .s2{font-size:11px;color:var(--gray);font-weight:400;margin-left:6px;}
@@ -220,12 +222,12 @@
       <h2>④ 加购三款（单独选·不混套餐）</h2>
       <div class="note" style="margin:0">灯具、网络、中控屏为独立加购款，<b>勾选后才计入下方「报价合计」</b>；数量随你填，价格按供应商报价单执行。</div>
 
-      <div class="addon" id="adLt">
+      <div class="addon" id="adLt" onclick="togAdd('lt')">
         <div class="hd">
           <div class="t">灯具<span class="s2">筒射灯 + 灯带（按米）</span></div>
-          <div class="sw" onclick="togAdd('lt')"></div>
+          <div class="sw"></div>
         </div>
-        <div class="qty">
+        <div class="qty" onclick="event.stopPropagation()">
           <div class="field"><label>Aqara射灯T2Pro-36°（盏）</label>
             <div class="stepper"><button onclick="step('ltN',-1)">−</button><input class="val inp" id="ltN" type="number" inputmode="numeric" min="0" value="10" oninput="setN('ltN',this.value)"><button onclick="step('ltN',1)">+</button></div></div>
           <div class="field"><label>双色温灯带T2（米）</label>
@@ -235,12 +237,12 @@
         <div class="sum" id="sumLt">—</div>
       </div>
 
-      <div class="addon" id="adNet">
+      <div class="addon" id="adNet" onclick="togAdd('net')">
         <div class="hd">
           <div class="t">网络<span class="s2">主路由 + 面板AP + 吸顶AP</span></div>
-          <div class="sw" onclick="togAdd('net')"></div>
+          <div class="sw"></div>
         </div>
-        <div class="qty">
+        <div class="qty" onclick="event.stopPropagation()">
           <div class="field"><label>面板AP RG-EAP162（个）</label>
             <div class="stepper"><button onclick="step('apN',-1)">−</button><input class="val inp" id="apN" type="number" inputmode="numeric" min="0" value="4" oninput="setN('apN',this.value)"><button onclick="step('apN',1)">+</button></div></div>
           <div class="field"><label>吸顶AP RG-EAP262（个）</label>
@@ -253,12 +255,12 @@
         <div class="sum" id="sumNet">—</div>
       </div>
 
-      <div class="addon" id="adPv">
+      <div class="addon" id="adPv" onclick="togAdd('pv')">
         <div class="hd">
           <div class="t">中控屏<span class="s2">妙控S100 / 集悦智慧面板</span></div>
-          <div class="sw" onclick="togAdd('pv')"></div>
+          <div class="sw"></div>
         </div>
-        <div class="qty">
+        <div class="qty" onclick="event.stopPropagation()">
           <div class="field"><label>妙控场景屏S100（块）</label>
             <div class="stepper"><button onclick="step('pnS',-1)">−</button><input class="val inp" id="pnS" type="number" inputmode="numeric" min="0" value="1" oninput="setN('pnS',this.value)"><button onclick="step('pnS',1)">+</button></div></div>
           <div class="field"><label>集悦智慧面板（块）</label>
@@ -570,9 +572,9 @@
   }
   bindTap('button[onclick="unlockAll()"]', unlockAll);
   bindTap('button[onclick="wipeAll()"]', wipeAll);
-  bindTap('#adLt .sw', function(){ togAdd('lt'); });
-  bindTap('#adNet .sw', function(){ togAdd('net'); });
-  bindTap('#adPv .sw', function(){ togAdd('pv'); });
+  bindTap('#adLt', function(){ togAdd('lt'); });
+  bindTap('#adNet', function(){ togAdd('net'); });
+  bindTap('#adPv', function(){ togAdd('pv'); });
 
   calc();
   document.getElementById('feeRate').addEventListener('input', calc);
