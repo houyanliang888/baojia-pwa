@@ -1,6 +1,6 @@
 /* 全屋智能报价 PWA · Service Worker
    策略：缓存优先 + 后台更新。装到手机桌面后，没网也能打开报价。 */
-var CACHE = 'houge-quote-v1.2.2';
+var CACHE = 'houge-quote-v1.2.3';
 var ASSETS = [
   './',
   './index.html',
