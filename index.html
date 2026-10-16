@@ -60,10 +60,11 @@
   .miniBtn{
     padding:7px 13px;border-radius:9px;border:1px solid var(--line);background:#fff;
     font-size:12.5px;color:var(--navy);font-family:inherit;cursor:pointer;
+    touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,0);
   }
   .miniBtn:active{background:#f2f5f9;}
   .toggle{display:flex;align-items:center;justify-content:space-between;}
-  .sw{width:50px;height:28px;border-radius:20px;background:#cfd8e3;position:relative;transition:.2s;flex:none;cursor:pointer;}
+  .sw{width:50px;height:28px;border-radius:20px;background:#cfd8e3;position:relative;transition:.2s;flex:none;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,0);}
   .sw.on{background:var(--orange);}
   .sw::after{content:"";position:absolute;width:22px;height:22px;border-radius:50%;background:#fff;
     top:3px;left:3px;transition:.2s;}
@@ -196,8 +197,8 @@
       <h2>③ 套餐数量选配</h2>
       <div class="note" style="margin:0 0 6px">套餐内数量默认按户型/面积自动估算。点 <b>±</b> 或<b>直接输入数字</b>即可改成自选值（会标「已手动」，之后改面积/户型也不再被覆盖）；减到 0 即不选该项。</div>
       <div class="row" style="margin:0 0 12px;gap:8px;display:flex">
-        <button class="miniBtn" onclick="unlockAll()">↺ 恢复自动估算</button>
-        <button class="miniBtn" onclick="wipeAll()">✕ 清空重来</button>
+        <button type="button" class="miniBtn" onclick="unlockAll()">↺ 恢复自动估算</button>
+        <button type="button" class="miniBtn" onclick="wipeAll()">✕ 清空重来</button>
       </div>
       <div class="field"><label>智能开关面板（面）</label>
         <div class="stepper"><button onclick="step('swN',-1)">−</button><input class="val inp" id="swN" type="number" inputmode="numeric" min="0" value="12" oninput="setN('swN',this.value)"><button onclick="step('swN',1)">+</button></div></div>
@@ -556,6 +557,22 @@
     try{ localStorage.removeItem(LS_KEY); }catch(e){}
     location.reload();
   }
+
+  // 移动端 touch 兜底：部分浏览器在 PWA standalone 下对 inline onclick 响应不积极
+  function bindTap(sel, fn){
+    var el = typeof sel === 'string' ? document.querySelector(sel) : sel;
+    if(!el) return;
+    el.addEventListener('touchstart', function(){}, {passive:true});
+    el.addEventListener('touchend', function(e){
+      e.preventDefault();
+      fn.call(el);
+    });
+  }
+  bindTap('button[onclick="unlockAll()"]', unlockAll);
+  bindTap('button[onclick="wipeAll()"]', wipeAll);
+  bindTap('#adLt .sw', function(){ togAdd('lt'); });
+  bindTap('#adNet .sw', function(){ togAdd('net'); });
+  bindTap('#adPv .sw', function(){ togAdd('pv'); });
 
   calc();
   document.getElementById('feeRate').addEventListener('input', calc);
